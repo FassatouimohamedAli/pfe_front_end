@@ -1,0 +1,133 @@
+<div class="container mt-4">
+    <p-card class="search-card" styleClass="p-card-shadow" >
+        <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/rec.png" alt="BNA" style="width: 80px;">
+            </div>
+            <h2 class="ml-0 mb-0">Saisie Les Traitements de Recouvrement</h2>
+        </ng-template>
+        <ng-template pTemplate="body">
+            <div class="header-content d-flex justify-content-center align-items-center">
+                <label for="searchId" class="label">Identifiant du débiteur</label>
+                <input type="text" id="searchId" pInputText [(ngModel)]="searchId" class="input"
+                    (keydown.enter)="searchDebiteur()">
+                <button type="button" pButton icon="pi pi-search"
+                    class="button p-button-raised p-button-rounded" (click)="searchDebiteur()" pTooltip="RECHERCHE" tooltipPosition="top"></button>
+            </div>
+        </ng-template>
+    </p-card>
+    <div>
+        <div class="my-1"></div>
+        <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve" >
+            <ng-template pTemplate="body">
+                <p-table [value]="[debiteur]" styleClass="p-datatable-gridlines" id="debiteurTable">
+                    <ng-template pTemplate="caption">
+                        Débiteur
+                    </ng-template>
+                    <ng-template pTemplate="body" let-debiteur>
+                        <tr>
+                            <td><b>Prénom :</b></td>
+                            <td>{{ debiteur.client?.firstName }}</td>
+                            <td><b>Nom :</b></td>
+                            <td>{{ debiteur.client?.lastName }}</td>
+                          </tr>
+                          <tr>
+                            <td><b>Numéro CTX :</b></td>
+                            <td>{{ debiteur.numero }}</td>
+                            <td><b>Date d'entrée :</b></td>
+                            <td>{{ debiteur.transferDate | date:'dd MMM yyyy'}}</td>
+                          </tr>
+                          <tr>
+                            <td><b>Statut :</b></td>
+                            <td>{{ debiteur.etat }}</td>
+                            <td><b>Solde de recouvrement :</b></td>
+                            <td>{{debiteur.soldeRecouvrement | currency:'DNT':'symbol'  }}</td>
+                          </tr>
+                    
+                    </ng-template>
+                </p-table>
+            </ng-template>
+        </p-card>
+        <p-toast></p-toast>
+        <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+        <div class="my-1"></div>
+        <!-- Affichage des virements -->
+        <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve && PaymentvirementClient.length > 0" styleClass="p-card-shadow">
+            <p-table [value]="PaymentvirementClient" styleClass="p-datatable-gridlines" [paginator]="true" [rows]="pageSize" [currentPageReportTemplate]="paginationTemplate">
+                <ng-template pTemplate="caption">
+                    
+                    <div class="d-flex justify-content-between">
+                      <h5>Virements Client :</h5>
+                      <div >
+                        <input type="text" pInputText placeholder="Rechercher par Date" [(ngModel)]="searchFirstName">
+                      </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                      <th>Date Réception</th>
+                        <th>Montant</th>
+                        <th>Nom Propriétaire</th>
+                        <th>Nom Destinataire</th>
+                        <th>RIB</th>
+                        <th>Opération</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-PaymentvirementClient>
+                    <tr *ngIf=" PaymentvirementClient.dateReception.toLowerCase().includes(searchFirstName.toLowerCase())" >
+                      <td>{{ PaymentvirementClient.dateReception | date:'dd MMM yyyy'}}</td>
+                        <td>{{ PaymentvirementClient.montant | currency:'DNT':'symbol'   }}</td>
+                        <td>{{ PaymentvirementClient.virementClient.nomPropritaireVirement}}</td>
+                        <td>{{ PaymentvirementClient.virementClient.nomDestinataire }}</td>
+                        <td >{{ PaymentvirementClient.virementClient.rib }}</td>
+                        <td>
+                            <button (click)="confirm(PaymentvirementClient.id)" pButton icon="pi pi-check"
+                            [disabled]="isOperationConfirmed(PaymentvirementClient.id)"  class="button p-button-raised p-button-rounded"  label="Confirm"
+                                 ></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-card>
+        <div class="my-1"></div>
+        <!-- Affichage des chèques -->
+        <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve && PaymentchequeClient.length > 0">
+            <p-table [value]="PaymentchequeClient" styleClass="p-datatable-gridlines" [paginator]="true" [rows]="pageSize" [currentPageReportTemplate]="paginationChequeTemplate">
+                <ng-template pTemplate="caption">
+                  <div class="d-flex justify-content-between">
+                    <h5> Chèques Client :</h5>
+                    <div >
+                      <input type="text" pInputText placeholder="Rechercher par Date" [(ngModel)]="searchFirstName">
+                    </div>
+                  </div>
+                   
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Date Réception</th>
+                        <th>Montant</th>
+                        <th>Nom Propriétaire</th>
+                        <th>Nom Destinataire</th>
+                        <th>Numéro</th>
+                        <th>Agence Reception</th>
+                        <th>Opération</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-PaymentchequeClient>
+                    <tr *ngIf=" PaymentchequeClient.dateReception.toLowerCase().includes(searchFirstName.toLowerCase())">
+                        <td>{{ PaymentchequeClient.dateReception | date:'dd MMM yyyy'}}</td>
+                        <td>{{ PaymentchequeClient.montant | currency:'DNT':'symbol'  }} </td>
+                        <td>{{ PaymentchequeClient.chequeClient.nomPropritaire}}</td>
+                        <td>{{ PaymentchequeClient.chequeClient.nomDestinataire}}</td>
+                        <td>{{ PaymentchequeClient.chequeClient.numero}}</td>
+                        <td>{{ PaymentchequeClient.chequeClient.agenceReception}}</td>
+                        <td>
+                            <button (click)="confirm(PaymentchequeClient.id)" pButton icon="pi pi-check"
+                            [disabled]="isOperationConfirmed(PaymentchequeClient.id)"      class="button p-button-raised p-button-rounded" label="Confirm"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-card>
+    </div>
+</div>

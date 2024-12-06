@@ -1,0 +1,121 @@
+<div class="container mt-2">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/cheque-de-paiement.png" alt="BNA" style="width:80px;">
+            </div>
+            <h2 class="ml-3 mb-0">Remplir Les Cheques et Les Virement</h2>
+            <div class="row mb-2">
+                <div class="col-md-2">
+                    <p-dropdown [options]="etatOptions" [(ngModel)]="selectedTypePayment"
+                        placeholder="Filtrer par état"></p-dropdown>
+                </div>
+            </div>
+            <p-messages [(value)]="msgs1" [enableService]="false"></p-messages>
+        </ng-template>
+
+        <ng-template pTemplate="body">
+            <p-table [value]="filteredOperations()" [paginator]="true" [rows]="pageSize"
+                [currentPageReportTemplate]="paginationTemplate">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Date Opération</th>
+                        <th>Type Opération</th>
+                        <th>Etat Opération</th>
+                        <th>Detail Opération</th>
+                        <th>Object Opération</th>
+                        <th>Type Paiment</th>
+                        <th>Montant</th>
+                        <th>Les Chèques/Les Virements</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-operation>
+                    <tr *ngIf="operation.typePayment.toLowerCase().includes(searchTypePaymentOperation.toLowerCase())">
+                        <td>{{ operation.dateOperation | date:'dd MMM yyyy'}}</td>
+                        <td>{{ operation.typeOperation }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i *ngIf="operation.etatOperation.toUpperCase() === 'VALIDER'"
+                                    class="pi pi-check-circle status-icon valider"></i>
+                                <i *ngIf="operation.etatOperation.toUpperCase() === 'REJETER'"
+                                    class="pi pi-times-circle status-icon rejeter"></i>
+                                <i *ngIf="operation.etatOperation.toUpperCase() === 'EN COURS'"
+                                    class="pi pi-spin pi-spinner status-icon en-cours"></i>
+                            </div>
+                        </td>
+                        <td>{{ operation.detailOperation }}</td>
+                        <td>{{ operation.objectOperation }}</td>
+                        <td>{{ operation.typePayment }}</td>
+                        <td>{{ operation.montant | currency:'DNT':'symbol'}}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <button type="button" pButton icon="pi pi-file-edit"
+                                    class="p-button-raised p-button-rounded mr-3" (click)="DetailModel(operation.id)"
+                                    [disabled]="isChequeAvailable(operation.id) || isVirementAvailable(operation.id)" pTooltip="AJOUTER" tooltipPosition="top"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-template>
+        <p-toast></p-toast>
+
+        <!-- Detail Dialog -->
+        <p-dialog header="Remplir Cheque ou Virement :" [(visible)]="displayUpdateModal" [modal]="true"
+            [style]="{ width: '600px' }">
+            <div class="modal-content">
+                <div class="modal-body d-flex justify-content-center ">
+                    <div>
+                        <div class="form-group mb-4" *ngIf="isChequeType(idOperation)">
+                            <div class="mb-2" *ngIf="submitted && ChequeForm.invalid" class="text-danger">
+                                Veuillez remplir tous les champs obligatoires.
+                            </div>
+                            <form #ChequeForm="ngForm" (ngSubmit)="createCheque(ChequeForm)">
+                                <div class="mb-3">
+                                    <label for="numero" class="form-label">Numéro de Cheque</label>
+                                    <input type="number" class="form-control" id="numero" name="numero" pInputText
+                                        [(ngModel)]="numero" required pattern="[0-9]{7}">
+                                    <small
+                                        *ngIf="ChequeForm.controls?.['numero']?.hasError('pattern') && ChequeForm.controls['numero'].touched"
+                                        class="text-danger">Le champ doit contenir exactement 7 chiffres.</small>
+                                    <small
+                                        *ngIf="ChequeForm.controls?.['numero']?.hasError('required') && ChequeForm.controls['numero'].touched"
+                                        class="text-danger">Le champ est obligatoire.</small>
+
+                                </div>
+                                <button type="submit" pButton icon="pi pi-plus"
+                                    class="p-button-raised p-button-rounded mr-3"></button>
+                            </form>
+                        </div>
+
+                        <div class="form-group mb-4" *ngIf="!isChequeType(idOperation)">
+                            <div class="mb-2" *ngIf="submitted && !dateVirement" class="text-danger">
+                                Veuillez remplir tous les champs obligatoires.
+                            </div>
+                            <form #VirmentForm="ngForm" (ngSubmit)="createVirment(VirmentForm)">
+                                <div class="field col-12 md:col-4">
+                                    <label for="dateVirement" class="form-label">Date Virement</label>
+                                    <div class="d-flex align-items-center">
+                                        <p-calendar id="dateVirement" name="dateVirement" [(ngModel)]="dateVirement"
+                                            [showIcon]="true" [touchUI]="true" [readonlyInput]="true" inputId="touchui">
+                                        </p-calendar>
+                                    </div>
+
+                                    <small
+                                        *ngIf="VirmentForm.controls?.['dateVirement']?.hasError('required') &&  !dateVirement && VirmentForm.controls['dateVirement'].touched"
+                                        class="text-danger">Le champ est obligatoire.</small>
+
+                                </div>
+                                <button type="submit" pButton icon="pi pi-plus"
+                                    class="p-button-raised p-button-rounded mr-3">Remplir</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ng-template pTemplate="footer">
+                <!-- Boutons footer -->
+            </ng-template>
+        </p-dialog>
+    </p-card>
+</div>

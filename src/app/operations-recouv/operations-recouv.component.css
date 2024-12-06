@@ -1,0 +1,298 @@
+.p-button-raised {
+  background-color: white !important;
+  border: 1px solid transparent !important;
+  color: #06877a;
+}
+
+.p-button-raised:hover {
+  background-color: #06877a !important;
+  color: white;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 10px;
+  /* Vous pouvez ajuster cette valeur selon vos besoins */
+}
+
+.input {
+  margin-right: 10px;
+  /* Vous pouvez ajuster cette valeur selon vos besoins */
+}
+
+.button {
+  margin-right: 10px;
+  /* Vous pouvez ajuster cette valeur selon vos besoins */
+}
+
+.search-card {
+  margin-bottom: 20px;
+  /* Add margin at the bottom to create space between cards */
+}
+
+
+.details-table td {
+  border: none;
+  /* Remove default borders */
+}
+
+
+
+.label,
+.details-table td,
+.p-datatable-gridlines td {
+  font-family: 'Lato', sans-serif;
+  /* Utiliser une police de caractères cool */
+  font-weight: lighter;
+  /* Réduire le poids de la police */
+  /* Couleur verte cool */
+}
+
+/* Styliser le texte en gras pour les en-têtes des tableaux */
+.details-table th,
+.p-datatable-gridlines th {
+  font-weight: lighter;
+  /* Utiliser une police en gras */
+}
+
+.status-en-cours {
+  background-color: rgb(244, 244, 116);
+
+}
+
+.status-rejeter {
+  background-color: rgb(236, 42, 42);
+  color: white
+}
+
+.green-background {
+  background-color: #06877a !important;
+  color: white;
+  /* Changer la couleur du texte en blanc pour une meilleure lisibilité */
+}
+
+.status-valider {
+  background-color: rgb(8, 205, 126);
+
+}
+
+.table-style {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.header-style th {
+  background-color: #47a883;
+  color: #fff;
+  font-weight: bold;
+}
+
+.header-style th,
+.body-style td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+}
+
+.table-caption,
+p {
+  margin-bottom: 10px;
+  color: #47a883;
+}
+
+/* Import de la police Google Fonts Lato avec les poids 300 et 400 */
+
+/* Application de la police Lato aux éléments appropriés */
+body,
+.card-body h2,
+th,
+td,
+.btn {
+  font-family: 'Lato', sans-serif;
+  /* Utilisation de la police Lato */
+}
+
+/* Style pour le titre */
+.card-body h2 {
+  color: #28a745;
+  /* Vert */
+  font-size: 24px;
+  /* Taille de police */
+  font-weight: 400;
+  /* Poids de la police */
+  margin-bottom: 20px;
+  /* Marge en bas */
+}
+
+/* Style pour la table */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Style pour les en-têtes de colonne */
+th {
+  background-color: #ffffff;
+  /* Green for headers */
+  color: #000000;
+  /* White text for headers */
+  font-weight: bold;
+  padding: 12px;
+  text-align: center;
+
+}
+
+/* Custom CSS */
+.form-check-input:checked {
+  background-color: green;
+  /* Change to any color you prefer */
+}
+
+
+
+
+/* Style pour les cellules */
+td {
+  padding: 12px;
+  text-align: center;
+}
+
+/* Style for odd rows */
+tr:nth-child(odd) td {
+  background-color: #f8f9fa;
+  /* Background color for odd rows */
+}
+
+/* Style pour les boutons d'action */
+.btn {
+  padding: 8px 16px;
+  /* Espacement intérieur */
+  border-radius: 4px;
+  /* Bord arrondi */
+  font-size: 14px;
+  /* Taille de police */
+  font-weight: 400;
+  /* Poids de la police */
+  cursor: pointer;
+  /* Curseur pointeur */
+  transition: background-color 0.3s ease;
+  /* Transition de couleur de fond */
+}
+
+/* Style pour les boutons de pagination */
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Style pour les boutons de pagination individuels */
+.pagination-buttons button {
+  margin: 0 4px;
+  background-color: #28a745;
+  /* Couleur de fond */
+  color: #12ad34;
+  /* Couleur du texte */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Style pour les boutons de pagination lorsqu'ils sont désactivés */
+.pagination-buttons button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+
+}
+
+/* Style pour les boutons de pagination au survol */
+.pagination-buttons button:hover {
+  background-color: #218838;
+  /* Couleur de fond au survol */
+}
+
+.p-button-raised {
+  background-color: white !important;
+  border: 1px solid transparent !important;
+  color: #06877a;
+}
+
+.p-button-raised:hover {
+  background-color: #06877a !important;
+  color: white;
+}
+
+
+
+h2 {
+  text-align: center;
+
+  color: #06877a;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+  /* Ajustez la taille de l'icône selon vos besoins */
+}
+
+.valider {
+  color: green;
+  /* Couleur de l'icône pour l'état "Valider" */
+}
+
+.rejeter {
+  color: red;
+  /* Couleur de l'icône pour l'état "Rejeter" */
+}
+
+.en-cours {
+  color: rgb(189, 189, 59);
+  /* Couleur de l'icône pour l'état "En cours" */
+}
+
+/* Styles pour le conteneur des icônes */
+.icon-container {
+  margin-right: 0.5rem;
+  /* Marge à droite pour espacer les icônes du texte */
+}
+
+img {
+  width: 35px;
+  /* Adjust the width as per your preference */
+  height: auto;
+  /* Maintain aspect ratio */
+  padding-top: 20px;
+}
+
+td,
+tr {
+  color: #037366;
+  /* Couleur verte */
+}
+
+.table-caption {
+  color: #06877a;
+  /* Couleur verte */
+}
+
+/* Style pour les cellules du tableau */
+.details-card .p-datatable .p-datatable-tbody tr td {
+  color: #06877a;
+  /* Couleur verte */
+}
+
+.annuler {
+  color: #9b459b;
+  /* Couleur mauve */
+
+}
+
+
+.button-container button {
+  margin-right: 10px; /* Ajustez la marge selon vos besoins */
+}

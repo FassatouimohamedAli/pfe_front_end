@@ -1,0 +1,32 @@
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <h3 class="text-center mb-4" style="color: rgb(71, 168, 131); font-size: 24px; font-weight: bold;">
+                        <i class="pi pi-key" style="font-size: 3em;"></i>
+                    </h3>
+                    
+                    <form #loginForm="ngForm" (ngSubmit)="Login(loginForm)" novalidate>
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Matricule</label>
+                            <input type="text" pInputText ngModel name="userName" class="form-control form-control-sm" id="userName" placeholder="Matricule" required>
+                            <small *ngIf="loginForm.controls['userName'].invalid && (loginForm.controls['userName'].dirty || loginForm.controls['userName'].touched)" class="text-danger">Le nom d'utilisateur est requis</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPassword" class="form-label">Mot de passe</label>
+                            <input type="password" pInputText ngModel name="userPassword"  class="form-control form-control-sm" id="userPassword" placeholder="Mot de passe" required>
+                            <small *ngIf="loginForm.controls['userPassword'].invalid && (loginForm.controls['userPassword'].dirty || loginForm.controls['userPassword'].touched)" class="text-danger">Le mot de passe est requis</small>
+                        </div>
+                        <!-- Afficher un message d'erreur if login  galta -->
+                        <div class="mb-3">
+                        <small *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</small>
+                    </div>
+                   
+                        <button  type="submit" pButton icon="pi pi-sign-in" class="btn btn-primary btn-sm btn-block" ></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

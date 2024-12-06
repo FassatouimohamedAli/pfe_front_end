@@ -1,0 +1,53 @@
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <p-card styleClass="p-card-shadow" class="p-card-rounded">
+          <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/la-main-doeuvre.png" alt="BNA" style="width:80px;">
+            </div>
+            <h3 class="text-center" style=" color: #06877a ; font-size: 24px; ">Création des Roles</h3>
+          </ng-template>
+          <ng-template pTemplate="body">
+            <form #createRoleForm="ngForm" (ngSubmit)="createRole(createRoleForm)">
+              <div class="mb-3">
+                <label for="roleName" class="form-label">Role </label>
+                <input type="text" pInputText [(ngModel)]="roleName" name="roleName" class="form-control form-control-sm"
+                  id="roleName" placeholder="Role Name" required>
+                <small *ngIf="!isFieldValid(roleName)" class="text-danger">
+                  La description du rôle ne doit contenir que des lettres et des espaces.
+                </small>
+              </div>
+
+              <div class="mb-3">
+                <label for="roleDescription" class="form-label">Description</label>
+                <input type="text" pInputText [(ngModel)]="roleDescription" name="roleDescription"
+                  class="form-control form-control-sm" id="roleDescription" placeholder="Role Description" required>
+                <small *ngIf="!isFieldValid(roleDescription)" class="text-danger">
+                  La description du rôle ne doit contenir que des lettres et des espaces.
+                </small>
+              </div>
+              <div class="d-flex justify-content-between">
+                <button type="submit" pButton icon="pi pi-plus" class="p-button-raised p-button-rounded me-2" pTooltip="INSERÉ" tooltipPosition="bottom"></button>
+                <button type="button" pButton icon="pi pi-eye" class="p-button-raised p-button-rounded" (click)="showRoleModal()" pTooltip="ROLES" tooltipPosition="bottom"></button>
+              </div>
+            </form>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>
+<p-dialog header="Liste des Roles" [(visible)]="displayRoleModal" [modal]="true" [style]="{width: '500px'}">
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let role of role">
+      <strong>{{ role.roleName }}</strong> : {{ role.roleDescription }}
+    </li>
+  </ul>
+  <p-footer>
+    <button type="button" pButton label="Fermer" class="btn btn-secondary" (click)="hideRoleModal()"></button>
+  </p-footer>
+</p-dialog>

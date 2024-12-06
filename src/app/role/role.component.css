@@ -1,0 +1,144 @@
+/* Import de la police Google Fonts Lato avec les poids 300 et 400 */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap');
+
+/* Application de la police Lato aux éléments appropriés */
+body,
+.card-body h2,
+th,
+td,
+.btn {
+  font-family: 'Lato', sans-serif;
+  /* Utilisation de la police Lato */
+}
+
+/* Style pour le titre */
+.card-body h2 {
+  color: #28a745;
+  /* Vert */
+  font-size: 24px;
+  /* Taille de police */
+  font-weight: 400;
+  /* Poids de la police */
+  margin-bottom: 20px;
+  /* Marge en bas */
+}
+
+/* Style pour la table */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Style pour les en-têtes de colonne */
+th {
+  background-color: #ffffff;
+  /* Green for headers */
+  color: #000000;
+  /* White text for headers */
+  font-weight: bold;
+  padding: 12px;
+  text-align: center;
+
+}
+
+/* Custom CSS */
+.form-check-input:checked {
+  background-color: green;
+  /* Change to any color you prefer */
+}
+
+
+
+
+/* Style pour les cellules */
+td {
+  padding: 12px;
+  text-align: center;
+}
+
+/* Style for odd rows */
+tr:nth-child(odd) td {
+  background-color: #f8f9fa;
+  /* Background color for odd rows */
+}
+
+/* Style pour les boutons d'action */
+.btn {
+  padding: 8px 16px;
+  /* Espacement intérieur */
+  border-radius: 4px;
+  /* Bord arrondi */
+  font-size: 14px;
+  /* Taille de police */
+  font-weight: 400;
+  /* Poids de la police */
+  cursor: pointer;
+  /* Curseur pointeur */
+  transition: background-color 0.3s ease;
+  /* Transition de couleur de fond */
+}
+
+/* Style pour les boutons de pagination */
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Style pour les boutons de pagination individuels */
+.pagination-buttons button {
+  margin: 0 4px;
+  background-color: #28a745;
+  /* Couleur de fond */
+  color: #12ad34;
+  /* Couleur du texte */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Style pour les boutons de pagination lorsqu'ils sont désactivés */
+.pagination-buttons button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+
+}
+
+/* Style pour les boutons de pagination au survol */
+.pagination-buttons button:hover {
+  background-color: #218838;
+  
+  /* Couleur de fond au survol */
+}
+
+.p-button-raised {
+  background-color: white !important;
+  border: 1px solid transparent !important;
+  color: #06877a;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.p-button-raised:hover {
+  background-color: #06877a !important;
+  color: white;
+}
+
+
+
+h2 {
+  text-align: center;
+
+  color: #06877a;
+}
+
+.ui-dialog-title {
+  color: #06877a; /* Couleur verte */
+}
+
+/* Style pour les champs en vert */
+.form-label {
+  color: #06877a; /* Couleur verte */
+}
+

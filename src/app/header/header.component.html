@@ -1,0 +1,79 @@
+<div class="container-fluid">
+    <!-- Cliquer sur cette image affichera le sidebar -->
+    <a class="navbar-brand" (click)="showSidebar()">
+        <img src="assets/BNA.png" alt="BNA">
+    </a>
+    <p-sidebar [(visible)]="sidebarVisible" [blockScroll]="true" [style]="{'background-color': '#006a4e'}">
+        <ng-template pTemplate="header">
+            <a class="navbar-brand">
+                <img src="assets/BNA.png" alt="BNA">
+            </a>
+        </ng-template>
+        <ng-template pTemplate="content">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/home"
+                        (click)="hideSidebar()">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/consultation"
+                        *ngIf="userService.roleMatch(['ValiderFrais', 'Admin', 'Frais', 'Recouvrement', 'ValiderRecouvrement'])"
+                        (click)="hideSidebar()">Consultation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/operation"
+                        *ngIf="userService.roleMatch(['ValiderFrais'])" (click)="hideSidebar()">Valider Operation
+                        Frais</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/operationRecouv"
+                        *ngIf="userService.roleMatch(['ValiderRecouvrement'])" (click)="hideSidebar()">Valider Operation
+                        Recouvrement</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/admin"
+                        *ngIf="userService.roleMatch(['Admin'])" (click)="hideSidebar()">Admin Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/role"
+                        *ngIf="userService.roleMatch(['Admin'])" (click)="hideSidebar()">Création des Roles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/recherche"
+                        *ngIf="userService.roleMatch(['Frais'])" (click)="hideSidebar()">Operation Frais</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/recouv"
+                        *ngIf="userService.roleMatch(['Recouvrement'])" (click)="hideSidebar()">Operation
+                        Recouvrement</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/payer"
+                        *ngIf="userService.roleMatch(['Recouvrement'])" (click)="hideSidebar()">Affectation Des Recouvrements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/amenagement"
+                        *ngIf="userService.roleMatch(['ValiderRecouvrement'])" (click)="hideSidebar()">Arrangement</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/echancier"
+                        *ngIf="userService.roleMatch(['ValiderRecouvrement'])" (click)="hideSidebar()">Echéanciers</a>
+                </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" routerLink="/cheque"
+                        *ngIf="userService.roleMatch(['Frais'])" (click)="hideSidebar()">cheques & Virement</a>
+                </li>
+
+            </ul>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <button *ngIf="!isLoggedIn()" pButton icon="pi pi-sign-in" type="button" routerLink="/login"
+                class="p-button-info p-button-outline" (click)="hideSidebar()"></button>
+            <button *ngIf="isLoggedIn()" type="button" pButton icon="pi pi-power-off" (click)="logout()"
+                class="p-button-danger p-button-outline" (click)="hideSidebar()"></button>
+        </ng-template>
+
+    </p-sidebar>

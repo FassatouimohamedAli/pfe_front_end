@@ -1,0 +1,129 @@
+<!-- admin.component.html -->
+<div class="container mt-1">
+  <p-card>
+    <ng-template pTemplate="header">
+        <div class="d-flex justify-content-center align-items-start">
+            <img src="assets/user-interface.png" alt="BNA" style="width:80px;">
+        </div>
+        <h2 class="ml-0 mb-0">Tableau de bord des rôles des agents</h2>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <input type="text" pInputText placeholder="Rechercher par Nom" [(ngModel)]="searchFirstName">
+        </div>
+      </div>
+    </ng-template>
+  
+    <ng-template pTemplate="body">
+      <p-table [value]="users" [paginator]="true" [rows]="pageSize" [currentPageReportTemplate]="paginationTemplate">
+        <ng-template pTemplate="header">
+          <tr class="centered-cell">
+            <th>Matricule</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Rôles</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr class="centered-cell"   *ngIf="user.nom.toLowerCase().includes(searchFirstName.toLowerCase())" >
+            <td>{{ user.userName }}</td>
+            <td>{{ user.nom }}</td>
+            <td>{{ user.prenom }}</td>
+            <td>
+              <ul class="list-unstyled">
+                <li *ngFor="let role of user.role" class="role">{{ role.roleName }}</li>
+              </ul>
+            </td>
+            <td>
+              <div class="d-flex justify-content-center centered-cell">
+                <button type="button" pButton icon="pi pi-pencil" class="p-button-raised p-button-rounded mr-3"
+                  (click)="UpdateModal(user)" pTooltip="MISE A JOUR" tooltipPosition="top"></button>
+                <button type="button" pButton icon="pi pi-plus" class="p-button-raised p-button-rounded mr-3"
+                  (click)="openAddRoleModal(user)" pTooltip="ACCORDER" tooltipPosition="top"></button>
+                <button type="button" pButton icon="pi pi-trash" class="p-button-raised p-button-rounded"
+                  (click)="openDeleteRoleModal(user)" pTooltip="ENLEVER" tooltipPosition="top"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-template>
+  </p-card>
+</div>
+
+<!-- Modal de mise à jour -->
+<!-- Modal de mise à jour -->
+<p-dialog header="Mise à jour" [(visible)]="displayUpdateModal" [modal]="true" [style]="{width: '500px'}">
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="form-group mb-4">
+        <label for="currentRole" class="form-label">les Rôles actuels :</label>
+        <div *ngFor="let role of selectedUser.role" class="form-check">
+          <p-radioButton id="{{ role.roleName }}" name="currentRole" [value]="role.roleName" [(ngModel)]="oldRole"
+            class="form-check-input"></p-radioButton>
+          <label for="{{ role.roleName }}" class="form-check-label">{{ role.roleName }}</label>
+        </div>
+        <small *ngIf="!oldRole" class="text-danger">Il faut sélectionner un rôle.</small>
+      </div>
+      <div class="form-group">
+        <label for="newRole" class="form-label">Nouveau rôle :</label>
+        <select id="newRole" class="form-select" [(ngModel)]="newRole">
+          <option value="">Sélectionnez</option>
+          <option *ngFor="let role of roles" [value]="role.roleName">{{ role.roleName }}</option>
+        </select>
+        <small *ngIf="!newRole" class="text-danger">Il faut sélectionner un rôle.</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" pButton icon="pi pi-ban" class="p-button-raised p-button-rounded mr-3" (click)="closeModal()">Annuler</button>
+      <button type="button" pButton icon="pi pi-check-circle" class="p-button-raised p-button-rounded mr-3" (click)="updateUserRoles()">Mettre à jour le rôle</button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- Modal d'ajout de rôle -->
+<p-dialog header="Accorder un rôle" [(visible)]="displayAddRoleModal" [modal]="true" [style]="{width: '500px'}">
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="form-group mb-4">
+        <label for="currentRole" class="form-label">les Rôles actuels :</label>
+        <div *ngFor="let role of selectedUser.role" class="form-check">
+          <label for="{{ role.roleName }}" class="form-check-label">{{ role.roleName }}</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="newRole" class="form-label">Nouveau rôle :</label>
+        <select id="newRole" class="form-select" [(ngModel)]="newRole">
+          <option value="">Sélectionnez</option>
+          <option *ngFor="let role of roles" [value]="role.roleName">{{ role.roleName }}</option>
+        </select>
+        <small *ngIf="!newRole" class="text-danger">Il faut sélectionner un rôle.</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" pButton icon="pi pi-ban" class="p-button-raised p-button-rounded mr-3" (click)="closeModal()">Fermer</button>
+      <button type="button" pButton  icon="pi pi-check-circle" class="p-button-raised p-button-rounded mr-3" (click)="AddUserRoles()">Enregistrer les modifications</button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- Modal de suppression de rôle -->
+<p-dialog header="Enlever le rôle" [(visible)]="displayDeleteRoleModal" [modal]="true" [style]="{width: '500px'}">
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="form-group mb-4">
+        <label for="currentRole" class="form-label">Rôles actuels :</label>
+        <div *ngFor="let role of selectedUser.role" class="form-check">
+          <p-radioButton id="{{ role.roleName }}" name="currentRole" [value]="role.roleName" [(ngModel)]="oldRole"
+            class="form-check-input"></p-radioButton>
+          <label for="{{ role.roleName }}" class="form-check-label">{{ role.roleName }}</label>
+        </div>
+      </div>
+      <small *ngIf="!oldRole" class="text-danger">Il faut sélectionner un rôle.</small>
+    </div>
+    <div class="modal-footer">
+      <button type="button" pButton icon="pi pi-ban" class="p-button-raised p-button-rounded mr-3" (click)="closeModal()">Annuler</button>
+      <button type="button" pButton icon="pi pi-check-circle"  class="p-button-raised p-button-rounded mr-3" (click)="deleteRole()">Supprimer le rôle</button>
+    </div>
+  </div>
+</p-dialog>

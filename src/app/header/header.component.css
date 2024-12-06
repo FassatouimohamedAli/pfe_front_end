@@ -1,0 +1,13 @@
+.navbar-brand img {
+    width: 35px;
+    /* Adjust the width as per your preference */
+    height: auto;
+    /* Maintain aspect ratio */
+    padding-top: 20px; 
+}
+
+
+
+.text-white {
+    color: white !important;
+}

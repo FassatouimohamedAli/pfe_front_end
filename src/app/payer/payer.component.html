@@ -1,0 +1,117 @@
+<div class="container mt-4 ">
+    <p-card class="search-card" styleClass="p-card-shadow">
+        <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/payer-avec-un-clic.png" alt="BNA" style="width:80px;">
+            </div>
+            <h2 class="ml-0 mb-0">Affectation des Recouvrements</h2>
+        </ng-template>
+        <ng-template pTemplate="body">
+            <div class="header-content d-flex justify-content-center align-items-center">
+                <label for="searchId" class="label">Identifiant du débiteur </label>
+                <input type="text" id="searchId" pInputText [(ngModel)]="searchId" class="input"
+                    (keydown.enter)="searchDebiteur()">
+                <button type="button" pButton icon="pi pi-search" class="button p-button-raised p-button-rounded"
+                    (click)="searchDebiteur()" pTooltip="RECHERCHE" tooltipPosition="top"></button>
+            </div>
+        </ng-template>
+    </p-card>
+
+    <!-- Espace entre les cartes -->
+
+    <div class="my-1"></div>
+
+    <!-- Carte pour les détails -->
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve" styleClass="p-card-shadow">
+        <ng-template pTemplate="body">
+            <p-table [value]="[debiteur]" styleClass="p-datatable-gridlines" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                    <!-- <div class="export-buttons">
+                    <button type="button" pButton pRipple icon="pi pi-file" (click)="exportCSV()" class="mr-2" pTooltip="Export CSV" tooltipPosition="bottom"></button>
+                </div> -->
+                    <h4 class="table-caption">Débiteur</h4>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td><b>Prénom :</b></td>
+                        <td>{{ debiteur.client?.firstName }}</td>
+                        <td><b>Nom :</b></td>
+                        <td>{{ debiteur.client?.lastName }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Numéro CTX :</b></td>
+                        <td>{{ debiteur.numero }}</td>
+                        <td><b>Date d'entrée :</b></td>
+                        <td>{{ debiteur.transferDate | date:'dd MMM yyyy'}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Statut :</b></td>
+                        <td>{{ debiteur.etat }}</td>
+                        <td><b>Solde de recouvrement :</b></td>
+                        <td class="sold">{{debiteur.soldeRecouvrement | currency:'DNT':'symbol' }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-template>
+    </p-card>
+
+    <div class="my-1"></div>
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve">
+        <p-table [value]="Risk" styleClass="p-datatable-gridlines"  >
+            <ng-template pTemplate="caption">
+                Risques :
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Nom Credit</th>
+                    <th>montant Entre Principale</th>
+                    <th>Solde Principale</th>
+                    <th>Solde Ic </th>
+                    <th>Solde Ir</th>
+                    <th>montant Ic</th>
+                    <th>Montant des frais</th>
+                   
+                    <th>Stade</th>
+                    <th>Opérations</th>
+                </tr>
+
+            </ng-template>
+            <ng-template pTemplate="body" let-risk>
+                <tr>
+                    <td>{{risk.nomCredit}}</td>
+                    <td>{{risk.montantEntrePrincipale | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldePrincipal | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldeIc | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.soldeIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantDesFrais | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.stade}}</td>
+                    <td>
+                        <button type="button" pButton icon="pi pi-money-bill"
+                            class="p-button-raised p-button-rounded mr-3" (click)="showDialog(risk)" pTooltip="EFFECTUER" tooltipPosition="top"
+                            [disabled]="risk.stade == 'Cloture' ||  (risk.soldePrincipal === 0 && risk.soldeIc === 0  && risk.soldeIr === 0)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+</div>
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<p-toast></p-toast>
+<p-dialog header="Payer Un Risque" [(visible)]="displayUpdateModal" [modal]="true" [style]="{width: '400px'}">
+    <div class="modal-content">
+        <div class="modal-body">
+         
+            <h5>Input: {{montantPayer}}</h5>
+            <input type="text" pInputText [(ngModel)]="montantPayer" [disabled]="debiteur?.soldeRecouvrement === 0" />
+            <p-slider [(ngModel)]="montantPayer" [max]="debiteur?.soldeRecouvrement"
+                [disabled]="debiteur?.soldeRecouvrement === 0 "></p-slider>
+            <div class="mb-3"></div> <!-- Add a space between the input and the slider -->
+            <div class="mb-3 center">
+                <button type="button" pButton class="p-button-raised p-button-rounded mr-3"
+                    (click)="confirmer(montantPayer)">Confirmation</button>
+            </div>
+        </div>
+    </div>
+</p-dialog>

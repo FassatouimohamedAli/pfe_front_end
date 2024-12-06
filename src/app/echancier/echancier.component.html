@@ -1,0 +1,161 @@
+<div class="container mt-4">
+    <p-card class="search-card" styleClass="p-card-shadow">
+        <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/arrangement.png" alt="BNA" style="width:80px;">
+            </div>
+            <h2 class="ml-0 mb-0">Les Echéanciers de Débiteur</h2>
+        </ng-template>
+        <ng-template pTemplate="body">
+            <div class="header-content d-flex justify-content-center align-items-center">
+                <label for="searchId" class="label">Identifiant du débiteur</label>
+                <input type="text" id="searchId" pInputText [(ngModel)]="searchId" class="input uniform-width"
+                    (keydown.enter)="searchDebiteur()">
+                <button type="button" pButton icon="pi pi-search" class="button p-button-raised p-button-rounded"
+                    (click)="searchDebiteur()"></button>
+            </div>
+        </ng-template>
+    </p-card>
+
+    <div class="my-1"></div>
+
+    <!-- Carte pour les détails -->
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve" styleClass="p-card-shadow"> 
+        <ng-template pTemplate="body">
+            <p-table [value]="[debiteur]" class="table-style" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                    <!-- <div class="export-buttons">
+                        <button type="button" pButton pRipple icon="pi pi-file" (click)="exportCSV()" class="mr-2" pTooltip="Export CSV" tooltipPosition="bottom"></button>
+                    </div> -->
+                    <h4 class="table-caption">Débiteur</h4>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-debiteur>
+                    <tr>
+                        <td><b>Prénom :</b></td>
+                        <td>{{ debiteur.client?.firstName }}</td>
+                        <td><b>Nom :</b></td>
+                        <td>{{ debiteur.client?.lastName }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Numéro CTX :</b></td>
+                        <td>{{ debiteur.numero }}</td>
+                        <td><b>Date d'entrée :</b></td>
+                        <td>{{ debiteur.transferDate | date:'dd MMM yyyy'}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Statut :</b></td>
+                        <td>{{ debiteur.etat }}</td>
+                        <td><b>Solde de recouvrement :</b></td>
+                        <td>{{debiteur.soldeRecouvrement | currency:'DNT':'symbol'  }}</td>
+                      </tr>
+
+                </ng-template>
+            </p-table>
+        </ng-template>
+    </p-card>
+
+    <div class="my-1"></div>
+
+    <!-- Carte pour les détails -->
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve" >
+        <ng-template pTemplate="body">
+            <p-table [value]="[arrangement]" class="table-style" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                    <!-- <div class="export-buttons">
+                        <button type="button" pButton pRipple icon="pi pi-file" (click)="exportCSV()" class="mr-2" pTooltip="Export CSV" tooltipPosition="bottom"></button>
+                    </div> -->
+                    <h4 class="table-caption">Arrangement</h4>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-arrangement>
+                    <tr>
+                        <td><b>montant Arrangement :</b></td>
+                        <td><b>Echéancier de Rombouresement </b></td>
+                        <td><b>periode en Mois </b></td>
+                        <td><b>Echéancier</b></td>
+                    </tr>
+                    <tr>
+                        <td>{{arrangement.montant }}</td>
+                        <td>{{arrangement.echancier }}</td>
+                        <td>{{arrangement.nbrEchancierParMois }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <button type="button" pButton icon="pi pi-eye"
+                                    class="p-button-raised p-button-rounded mr-3"
+                                    (click)="DetailModel(arrangement.id)" pTooltip="ECHÉANCIER" tooltipPosition="bottom"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-template>
+    </p-card>
+    <p-toast></p-toast>
+
+    <div class="my-1"></div>
+
+    <p-dialog header="Les Echéanciers " [(visible)]="displayUpdateModal" [modal]="true" [style]="{width: '900px'}">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-group mb-4">
+                    <p-card class="details-card">
+                        <ng-template pTemplate="body">
+                            <div class="card">
+
+                                <p-table [value]="echenciers" dataKey="id" editMode="row"
+                                    [tableStyle]="{'min-width': '50rem'}">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width:20%">Date Prévue</th>
+                                            <th style="width:20%">Montant Prévu</th>
+                                            <th style="width:20%">Montant Payé</th>
+                                            <th style="width:20%">État</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-echancier let-editing="editing" let-ri="rowIndex">
+                                        <tr [pEditableRow]="echancier">
+                                            <td>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="output">
+                                                        {{ echancier.datePrevu | date:'dd MMM yyyy' }}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="output">
+                                                        {{ echancier.montantPrevu | currency:'DNT':'symbol' }}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="input">
+                                                        <input pInputText type="text"
+                                                            [(ngModel)]="montantPayer" (change)="onMontantPayerChange()">
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                        {{ echancier.montantPayer }}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                            <td>
+                                                <p-cellEditor>
+                                                    <ng-template pTemplate="output">
+                                                        {{ echancier.etatEchancier }}
+                                                    </ng-template>
+                                                </p-cellEditor>
+                                            </td>
+                                           
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </ng-template>
+                    </p-card>
+                </div>
+            </div>
+        </div>
+    </p-dialog>
+</div>

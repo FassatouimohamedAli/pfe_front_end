@@ -1,0 +1,218 @@
+<div class="container mt-4 ">
+    <p-card class="search-card" styleClass="p-card-shadow">
+        <ng-template pTemplate="header">
+            <div class="d-flex justify-content-center align-items-start">
+                <img src="assets/saisir.png" alt="BNA" style="width:80px;">
+            </div>
+            <h2 class="ml-0 mb-0">Saisie les Operations des Frais</h2>
+        </ng-template>
+        <ng-template pTemplate="body">
+            <div class="header-content d-flex justify-content-center align-items-center">
+                <label for="searchId" class="label">Identifiant du débiteur </label>
+                <input type="text" id="searchId" pInputText [(ngModel)]="searchId" class="input"
+                    (keydown.enter)="searchDebiteur()">
+                <button type="button" pButton icon="pi pi-search" class="button p-button-raised p-button-rounded"
+                    (click)="searchDebiteur()" pTooltip="RECHERCHE" tooltipPosition="top"></button>
+            </div>
+        </ng-template>
+    </p-card>
+
+    <!-- Espace entre les cartes -->
+
+    <div class="my-1"></div>
+
+    <!-- Carte pour les détails -->
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve" styleClass="p-card-shadow">
+        <ng-template pTemplate="body">
+            <p-table [value]="[debiteur]" styleClass="p-datatable-gridlines" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                    <!-- <div class="export-buttons">
+                        <button type="button" pButton pRipple icon="pi pi-file" (click)="exportCSV()" class="mr-2" pTooltip="Export CSV" tooltipPosition="bottom"></button>
+                    </div> -->
+                    <h4 class="table-caption">Débiteur</h4>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td><b>Prénom :</b></td>
+                        <td>{{ debiteur.client?.firstName }}</td>
+                        <td><b>Nom :</b></td>
+                        <td>{{ debiteur.client?.lastName }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Numéro CTX :</b></td>
+                        <td>{{ debiteur.numero }}</td>
+                        <td><b>Date d'entrée :</b></td>
+                        <td>{{ debiteur.transferDate | date:'dd MMM yyyy'}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Statut :</b></td>
+                        <td>{{ debiteur.etat }}</td>
+                        <td><b>Solde de recouvrement :</b></td>
+                        <td>{{debiteur.soldeRecouvrement | currency:'DNT':'symbol' }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-template>
+    </p-card>
+
+    <div class="my-1"></div>
+    <p-card class="details-card" *ngIf="debiteurVisible && debiteurTrouve">
+        <p-table [value]="Risk" styleClass="p-datatable-gridlines">
+            <ng-template pTemplate="caption">
+                Risques :
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Nom Credit</th>
+                    <th>montant Entre Principale</th>
+                    <th>Solde Principale</th>
+                    <th>Solde Ic </th>
+                    <th>Solde Ir</th>
+                    <th>montant Ic</th>
+                    <th>Montant des frais</th>
+                   
+                    <th>Stade</th>
+                    <th>Opérations</th>
+                </tr>
+
+            </ng-template>
+            <ng-template pTemplate="body" let-risk>
+                <tr>
+                    <td>{{risk.nomCredit}}</td>
+                    <td>{{risk.montantEntrePrincipale | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldePrincipal | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldeIc | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.soldeIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantDesFrais | currency:'DNT':'symbol' }} </td>
+                    
+                   
+                    <td>{{risk.stade}}</td>
+                    <td>
+                        <button type="button" pButton icon="pi pi-plus" class="p-button-raised p-button-rounded mr-3"
+                            (click)="showDialog(risk)" pTooltip="AJOUTER" tooltipPosition="top"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+</div>
+<p-toast></p-toast>
+<p-dialog header="Ajouter Une Opération" [(visible)]="displayUpdateModal" [modal]="true" [style]="{width: '400px'}">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="mb-2" *ngIf="submitted && createOperationForm.invalid" class="text-danger">
+                Veuillez remplir tous les champs obligatoires.
+            </div>
+            <form #createOperationForm="ngForm" (ngSubmit)="createOperation(createOperationForm)">
+
+                <div class="mb-3">
+                    <label for="detailOperation" class="form-label">Détail de l'opération</label>
+                    <select id="detailOperation" name="detailOperation" class="form-select"
+                        [(ngModel)]="detailOperation" (change)="updateObjectOptions()" required>
+                        <option value="">Sélectionnez</option>
+                        <option value="Enregistrement">Enregistrement</option>
+                        <option value="Timbrage">Timbrage</option>
+                        <option value="Divers">Divers</option>
+                        <option value="Tiers">Tiers</option>
+                    </select>
+                    <small
+                        *ngIf="createOperationForm.controls?.['detailOperation']?.hasError('required') && createOperationForm.controls?.['detailOperation']?.touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                </div>
+
+
+                <div class="mb-3" *ngIf="detailOperation">
+                    <label for="objectOperation" class="form-label">Objet de l'opération</label>
+                    <select id="objectOperation" name="objectOperation" class="form-select"
+                        [(ngModel)]="objectOperation" required (change)="fetchTiersType(objectOperation)">
+                        <option value="">Sélectionnez</option>
+                        <option *ngFor="let option of objectOptions" [value]="option">{{ option }}</option>
+                    </select>
+                    <small
+                        *ngIf="createOperationForm.controls?.['objectOperation']?.hasError('required') && createOperationForm.controls?.['objectOperation']?.touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                </div>
+
+                <div class="mb-3" *ngIf="detailOperation ==='Tiers' && objectOperation ">
+                    <label for="tiers" class="form-label">Tiers</label>
+                    <select id="tiers" name="tiers" class="form-select" [(ngModel)]="selectedTierId" required>
+                        <option selected value="">Sélectionnez</option>
+                        <option *ngFor="let tier of this.tiers" [value]="tier.id">{{ tier.nom }}</option>
+                    </select>
+                    <small
+                        *ngIf="createOperationForm.controls['tiers'].hasError('required') && createOperationForm.controls['tiers'].touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                    <small *ngIf="selectedTierId === '' && createOperationForm.controls['tiers'].touched"
+                        class="text-danger">Veuillez sélectionner un tiers.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="typePayment" class="form-label">Type de paiement</label>
+                    <select id="typePayment" name="typePayment" class="form-select" [(ngModel)]="typePayment"  (change)="onTypePaymentChange()" required>
+                        <option value="">Sélectionnez</option>
+                        <option value="Espece">Espèces</option>
+                        <option value="Cheque">Chèque</option>
+                        <option value="Virement">Virement</option>
+                    </select>
+                    <small
+                        *ngIf="createOperationForm.controls?.['typePayment']?.hasError('required') && createOperationForm.controls['typePayment'].touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                </div>
+
+                <div class="mb-3"
+                    *ngIf="typePayment === 'Virement' || typePayment === 'Cheque' || typePayment === 'Espece'" >
+                    <label for="nomBeneficier" class="form-label">Nom du bénéficiaire</label>
+                    <input type="text" class="form-control" id="nomBeneficier" name="nomBeneficier" pInputText
+                        [(ngModel)]="nomBeneficier" required>
+                    <small
+                        *ngIf="createOperationForm.controls?.['nomBeneficier']?.hasError('required') && createOperationForm.controls['nomBeneficier'].touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                </div>
+
+                <div class="mb-3" *ngIf="typePayment === 'Virement'">
+                    <label for="rib" class="form-label">RIB</label>
+                    <input type="text" class="form-control" id="rib" name="rib" pInputText [(ngModel)]="rib"
+                        (input)="startRibValidation()" required pattern="[0-9]{20}">
+                    <small
+                        *ngIf="!isRibValidating && createOperationForm.controls?.['rib']?.hasError('pattern') && createOperationForm.controls['rib'].touched"
+                        class="text-danger">Le RIB doit contenir exactement 20 chiffres.</small>
+                    <small
+                        *ngIf="!isRibValidating && createOperationForm.controls?.['rib']?.hasError('required') && createOperationForm.controls['rib'].touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                    <small *ngIf="isRibValidating" class="text-info"><i class="pi pi-spin pi-spinner"
+                            style="font-size: 1rem"></i> Vérification en cours...</small>
+                    <small *ngIf="!isRibValidating && !isValidRib && rib && rib.length === 20" class="text-danger">RIB
+                        invalide.</small>
+                    <small *ngIf="isValidRib && bankName && rib && rib.length === 20" class="text-success">BANQUE : {{
+                        bankName }}</small>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="montant" class="form-label">Montant</label>
+                    <input type="number" class="form-control" id="montant" name="montant" pInputText
+                        [(ngModel)]="montant" required min="0">
+                    <small
+                        *ngIf="createOperationForm.controls?.['montant']?.hasError('required') && createOperationForm.controls['montant'].touched"
+                        class="text-danger">Le champ est obligatoire.</small>
+                    <small
+                        *ngIf="createOperationForm.controls?.['montant']?.hasError('min') && createOperationForm.controls['montant'].touched"
+                        class="text-danger">Le montant doit être un nombre positif.</small>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" pButton icon="pi pi-plus" class="p-button-raised p-button-rounded mr-3"
+                        pTooltip="AJOUTER" tooltipPosition="top"></button>
+                    <button type="reset" pButton icon="pi pi-refresh"
+                        class="p-button-raised p-button-rounded mr-3"></button>
+                    <div class="modal-footer" pTooltip="ANNULLER" tooltipPosition="top">
+                        <button type="button" pButton icon="pi pi-ban" class="p-button-raised p-button-rounded mr-3"
+                            (click)="closeModal()" pTooltip="FERMER" tooltipPosition="top"></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</p-dialog>

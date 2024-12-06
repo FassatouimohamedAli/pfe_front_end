@@ -1,0 +1,217 @@
+<div class="container mt-2">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="d-flex justify-content-center align-items-start">
+        <img src="assets/consultant.png" alt="BNA" style="width:80px;">
+      </div>
+      <h2 class="ml-3 mb-0">Consulter Toutes les Opérations</h2>
+      <div class="row mb-2">
+        <div class="col-md-2">
+          <p-dropdown [options]="etatOptions" [(ngModel)]="selectedEtat" placeholder="Filtrer par état"></p-dropdown>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <div class="col-md-2">
+          <input type="text" pInputText placeholder="Rechercher par type" [(ngModel)]="searchTypeOperation">
+        </div>
+        <div class="button-container">
+          <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-danger mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+          <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
+        </div>
+      </div>
+      <p-messages [(value)]="msgs2" ></p-messages>
+    </ng-template>
+
+    <ng-template pTemplate="body">
+      <p-table [value]="filteredOperations()" [paginator]="true" [rows]="pageSize" [currentPageReportTemplate]="paginationTemplate">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Date Opération</th>
+            <th>Type Opération</th>
+            <th>État Opération</th>
+            <th>Détail Opération</th>
+            <th>Objet Opération</th>
+            <th *ngIf="searchTypeOperation.toLowerCase() !== 'affectation'">Type Paiement</th>
+            <th *ngIf="searchTypeOperation.toLowerCase() === 'affectation'">Type Affectation</th>
+            <th>Montant</th>
+            <th>Détail</th> <!-- Ajout de la colonne pour le détail -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-operation>
+          <tr *ngIf="operation.typeOperation.toLowerCase().includes(searchTypeOperation.toLowerCase())">
+            <td>{{ operation.dateOperation | date:'dd MMM yyyy'}}</td>
+            <td>{{ operation.typeOperation }}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <i *ngIf="operation.etatOperation.toUpperCase() === 'VALIDER'" class="pi pi-check-circle status-icon valider"></i>
+                <i *ngIf="operation.etatOperation.toUpperCase() === 'REJETER'" class="pi pi-times-circle status-icon rejeter"></i>
+                <i *ngIf="operation.etatOperation.toUpperCase() === 'EN COURS'" class="pi pi-spin pi-spinner status-icon en-cours"></i>
+                <i *ngIf="operation.etatOperation.toUpperCase() === 'ANNULLER'"
+                                    class="pi pi-exclamation-triangle status-icon annuler"></i>
+              </div>
+            </td>
+            <td>{{ operation.detailOperation }}</td>
+            <td>{{ operation.objectOperation }}</td>
+            <td>{{ operation.typePayment }}</td>
+            <td>{{ operation.montant | currency:'DNT':'symbol' }}</td>
+            <td>
+              <div class="d-flex justify-content-center">
+                <button type="button" pButton icon="pi pi-eye" class="p-button-raised p-button-rounded mr-3"
+                  (click)="DetailModel(operation.risk?.id, operation.deb)" pTooltip="DETAIL" tooltipPosition="top"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-template>
+
+    <!-- Ajout du dialogue de mise à jour -->
+    <p-dialog header="Détail d'Opération" [(visible)]="displayUpdateModal" [modal]="true" [style]="{width: '900px'}">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-group mb-4">
+            <p-card class="details-card">
+              <p-table [value]="[risk]" class="table-style" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                  <h4 class="table-caption">Débiteur</h4>
+                </ng-template>
+                <ng-template pTemplate="body" let-risk>
+                  <tr>
+                    <td><b>Prénom :</b></td>
+                    <td>{{ risk.debiteur.client?.firstName }}</td>
+                    <td><b>Nom :</b></td>
+                    <td>{{ risk.debiteur.client?.lastName }}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Numéro CTX :</b></td>
+                    <td>{{ risk.debiteur.numero }}</td>
+                    <td><b>Date d'entrée :</b></td>
+                    <td>{{ risk.debiteur.transferDate | date:'dd MMM yyyy'}}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Statut :</b></td>
+                    <td>{{ risk.debiteur.etat }}</td>
+                    <td><b>Solde de recouvrement :</b></td>
+                    <td>{{ risk.debiteur.soldeRecouvrement | currency:'DNT':'symbol' }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-card>
+          </div>
+          <div class="form-group mb-4">
+            <p-card class="details-card">
+              <p-table [value]="[risk]" class="table-style" id="riskTable">
+                <ng-template pTemplate="caption">
+                  <h4 class="table-caption">Risques des Opérations</h4>
+                </ng-template>
+                <ng-template pTemplate="body" let-risk>
+                  <tr>
+                    <td><b>Nom Credit</b></td>
+                    <td><b>montant Entre Principale</b></td>
+                    <td><b>Solde Principale</b></td>
+                    <td><b>Solde Ic </b></td>
+                    <td><b>Solde Ir</b></td>
+                    <td><b>montant Ic</b></td>
+                    <td><b>Montant des frais</b></td>
+                    <td><b>Taux IC</b></td>
+                    <td><b>Taux IR</b></td>
+                    <td><b>Stade</b></td>
+                  
+                </tr>
+                <tr>
+                    <td>{{risk.nomCredit}}</td>
+                    <td>{{risk.montantEntrePrincipale | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldePrincipal | currency:'DNT':'symbol' }} </td>
+                    <td>{{risk.soldeIc | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.soldeIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantIr | currency:'DNT':'symbol' }}</td>
+                    <td>{{risk.montantDesFrais | currency:'DNT':'symbol' }} </td>
+                    <td>{{ risk.tauxIc | currency:'%':'symbol' }}</td>
+                    <td>{{ risk.tauxIr | currency:'%':'symbol' }}</td>
+                   
+                    <td>{{risk.stade}}</td>
+                </ng-template>
+              </p-table>
+            </p-card>
+          </div>
+        </div>
+      </div>
+    </p-dialog>
+  
+
+ 
+    <p-dialog header="Détail" [(visible)]="displaydetailrecouvModal" [modal]="true" [style]="{width: '900px'}">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-group mb-4">
+            <p-card class="details-card">
+              <p-table [value]="debiteur" class="table-style" id="debiteurTable">
+                <ng-template pTemplate="caption">
+                  <h4 class="table-caption">Débiteur</h4>
+                </ng-template>
+                <ng-template pTemplate="body" let-debiteur>
+                  <tr>
+                    <td><b>Prénom :</b></td>
+                    <td>{{ debiteur.client?.firstName }}</td>
+                    <td><b>Nom :</b></td>
+                    <td>{{ debiteur.client?.lastName }}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Numéro CTX :</b></td>
+                    <td>{{ debiteur.numero }}</td>
+                    <td><b>Date d'entrée :</b></td>
+                    <td>{{ debiteur.transferDate | date:'dd MMM yyyy' }}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Statut :</b></td>
+                    <td>{{ debiteur.etat }}</td>
+                    <td><b>Solde de Recouvrement :</b></td>
+                    <td>{{ debiteur.soldeRecouvrement | currency:'DNT':'symbol' }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-card>
+          </div>
+          <div class="form-group mb-4">
+            <p-card class="details-card">
+              <p-table [value]="[risk]" class="table-style" id="riskTable">
+                <ng-template pTemplate="caption">
+                  <h4 class="table-caption">Risques</h4>
+                </ng-template>
+                <ng-template pTemplate="body" let-risk>
+                  <tr>
+                      <td><b>Nom Credit</b></td>
+                      <td><b>montant Entre Principale</b></td>
+                      <td><b>Solde Principale</b></td>
+                      <td><b>Solde Ic </b></td>
+                      <td><b>Solde Ir</b></td>
+                      <td><b>montant Ic</b></td>
+                      <td><b>Montant des frais</b></td>
+                      <td><b>Taux IC</b></td>
+                      <td><b>Taux IR</b></td>
+                      <td><b>Stade</b></td>
+                    
+                  </tr>
+                  <tr>
+                      <td>{{risk.nomCredit}}</td>
+                      <td>{{risk.montantEntrePrincipale | currency:'DNT':'symbol' }} </td>
+                      <td>{{risk.soldePrincipal | currency:'DNT':'symbol' }} </td>
+                      <td>{{risk.soldeIc | currency:'DNT':'symbol' }}</td>
+                      <td>{{risk.soldeIr | currency:'DNT':'symbol' }}</td>
+                      <td>{{risk.montantIr | currency:'DNT':'symbol' }}</td>
+                      <td>{{risk.montantDesFrais | currency:'DNT':'symbol' }} </td>
+                      <td>{{ risk.tauxIc | currency:'%':'symbol' }}</td>
+                      <td>{{ risk.tauxIr | currency:'%':'symbol' }}</td>
+                     
+                      <td>{{risk.stade}}</td>
+                </ng-template>
+              </p-table>
+            </p-card>
+          </div>
+        </div>
+      </div>
+    </p-dialog>
+
+  
+
+
